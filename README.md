@@ -199,3 +199,7 @@ Built-in icon names: `check`, `grid`, `list`, `plus`, `filter`, `ellipsis`, `tra
 [Expo SDK 58](https://expo.dev/changelog) · [React Native 0.88](https://reactnative.dev/) · [Expo Modules API](https://docs.expo.dev/modules/overview/) · [AGSL](https://developer.android.com/develop/ui/views/graphics/agsl) · [Expo Router](https://docs.expo.dev/router/introduction/)
 
 ---
+
+## Credits
+
+This is a fork of [rit3zh/expo-glass-custom-menu](https://github.com/rit3zh/expo-glass-custom-menu) by rit3zh, released under the MIT License. All credit for the glass menu goes to the original author. This fork only adds a GitHub Actions workflow that builds an installable demo APK.
