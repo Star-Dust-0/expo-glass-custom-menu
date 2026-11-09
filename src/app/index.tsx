@@ -35,7 +35,7 @@ const Index: FC = () => {
       <TabBar
         t={t}
         bottom={insets.bottom}
-        tabs={TABS as never}
+        tabs={TABS}
         active={tab}
         onChange={setTab}
       />

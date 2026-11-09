@@ -49,9 +49,10 @@ run_set() {
   tap_desc "Favorites"; shot "$mode-4-favorites"
   tap_desc "Settings"; shot "$mode-5-settings"
   tap_desc "Appearance"; shot "$mode-6-settings-menu"
-  adb shell input keyevent 4; sleep 1
-  tap_desc "Library"; sleep 1
-  adb shell input tap 540 800; shot "$mode-7-detail"
+  adb shell input tap 50 300; sleep 1
+  tap_desc "Browse"; sleep 1
+  adb shell input tap 500 650; shot "$mode-7-detail"
+  dump; cp /tmp/ui.xml "$OUT/$mode-detail.xml"
   adb shell input keyevent 4; sleep 1
 }
 

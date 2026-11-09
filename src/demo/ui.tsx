@@ -2,7 +2,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { BlurView } from "expo-backdrop";
 import { Image } from "expo-image";
 import type { ComponentProps, FC, ReactNode } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
 import { Menu } from "@modules/glass-menu-android";
 import { MenuPressTarget } from "@/components/ui/menu-press-target";
@@ -40,10 +40,10 @@ const GlassCircle: FC<{ t: TTheme; icon: TIcon; label: string; children?: ReactN
   </Menu>
 );
 
-const SearchField: FC<{ t: TTheme; placeholder: string }> = ({ t, placeholder }) => (
+const SearchField: FC<{ t: TTheme; placeholder: string; value: string; onChangeText: (text: string) => void }> = ({ t, placeholder, value, onChangeText }) => (
   <View style={[s.search, { backgroundColor: t.fill }]}>
     <Ionicons name="search" size={17} color={t.secondary} />
-    <Text style={[s.searchText, { color: t.secondary }]}>{placeholder}</Text>
+    <TextInput placeholder={placeholder} placeholderTextColor={t.secondary} value={value} onChangeText={onChangeText} style={[s.searchText, { flex: 1, color: t.label, padding: 0 }]} />
   </View>
 );
 
@@ -158,7 +158,7 @@ const Thumb: FC<{ source: number; size: number; radius?: number }> = ({
 const TabBar: FC<{
   t: TTheme;
   bottom: number;
-  tabs: { key: string; label: string; icon: TIcon; iconOn: TIcon }[];
+  tabs: readonly { key: string; label: string; icon: TIcon; iconOn: TIcon }[];
   active: string;
   onChange: (k: string) => void;
 }> = ({ t, bottom, tabs, active, onChange }) => (

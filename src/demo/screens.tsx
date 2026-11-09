@@ -3,7 +3,7 @@ import { Menu } from "@modules/glass-menu-android";
 import { Image } from "expo-image";
 import { router } from "expo-router";
 import { useMemo, useState, type FC } from "react";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Appearance, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
 import { MenuPressTarget } from "@/components/ui/menu-press-target";
 
@@ -65,14 +65,15 @@ const LibraryScreen: FC<TProps> = ({ t, top, bottom }) => {
   const [seg, setSeg] = useState(0);
   const [sort, setSort] = useState<(typeof SORTS)[number]>("Date Added");
   const [grid, setGrid] = useState(false);
+  const [query, setQuery] = useState("");
 
   const shown = useMemo(() => {
-    let list = items.filter((i) => (seg === 1 ? i.favorite : seg === 2 ? i.added >= 12 : true));
+    let list = items.filter((i) => (seg === 1 ? i.favorite : seg === 2 ? i.added >= 12 : true) && i.title.toLowerCase().includes(query.toLowerCase()));
     list = [...list].sort((a, b) =>
       sort === "Title" ? a.title.localeCompare(b.title) : b.added - a.added,
     );
     return list;
-  }, [items, seg, sort]);
+  }, [items, seg, sort, query]);
 
   const toggleFav = (id: string) =>
     setItems((p) => p.map((i) => (i.id === id ? { ...i, favorite: !i.favorite } : i)));
@@ -110,7 +111,7 @@ const LibraryScreen: FC<TProps> = ({ t, top, bottom }) => {
           </GlassCircle>
         }
       />
-      <SearchField t={t} placeholder="Search albums" />
+      <SearchField t={t} placeholder="Search albums" value={query} onChangeText={setQuery} />
       <View style={{ height: 14 }} />
       <Segmented t={t} options={["All", "Favorites", "Recent"]} value={seg} onChange={setSeg} />
 
@@ -297,8 +298,8 @@ const SettingsScreen: FC<TProps> = ({ t, top, bottom }) => {
       <Section t={t}>
         <Cell
           t={t}
-          title="Mohamed"
-          subtitle="Apple ID, iCloud, Media"
+          title="Demo Account"
+          subtitle="Local demo, no account connected"
           left={
             <View style={st.avatar}>
               <Text style={st.avatarText}>M</Text>
@@ -310,7 +311,7 @@ const SettingsScreen: FC<TProps> = ({ t, top, bottom }) => {
       <Section t={t} header="Display">
         <Menu colorScheme="auto">
           <MenuPressTarget accessibilityLabel="Appearance" style={st.rowTrigger}>
-            <Cell
+            <View pointerEvents="none"><Cell
               t={t}
               title="Appearance"
               left={<IconBadge icon="contrast" color="#5E5CE6" />}
@@ -320,11 +321,11 @@ const SettingsScreen: FC<TProps> = ({ t, top, bottom }) => {
                   <Ionicons name="chevron-expand" size={16} color={t.tertiary} />
                 </View>
               }
-            />
+            /></View>
           </MenuPressTarget>
           <Menu.Content alignment="end">
             {THEMES.map((o) => (
-              <Menu.Item key={o} id={o} checked={appearance === o} onSelect={() => setAppearance(o)}>
+              <Menu.Item key={o} id={o} checked={appearance === o} onSelect={() => { setAppearance(o); Appearance.setColorScheme(o === "System" ? "auto" : o.toLowerCase() as "light" | "dark"); }}>
                 <Menu.Item.Title>{o}</Menu.Item.Title>
               </Menu.Item>
             ))}
@@ -333,7 +334,7 @@ const SettingsScreen: FC<TProps> = ({ t, top, bottom }) => {
         <Sep t={t} inset={58} />
         <Menu colorScheme="auto">
           <MenuPressTarget accessibilityLabel="Quality" style={st.rowTrigger}>
-            <Cell
+            <View pointerEvents="none"><Cell
               t={t}
               title="Image Quality"
               left={<IconBadge icon="image" color="#FF9F0A" />}
@@ -343,7 +344,7 @@ const SettingsScreen: FC<TProps> = ({ t, top, bottom }) => {
                   <Ionicons name="chevron-expand" size={16} color={t.tertiary} />
                 </View>
               }
-            />
+            /></View>
           </MenuPressTarget>
           <Menu.Content alignment="end">
             {["Standard", "High", "Original"].map((o) => (
