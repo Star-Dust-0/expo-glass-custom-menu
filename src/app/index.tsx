@@ -1,31 +1,46 @@
-import { LibraryToolbar } from "@/components/library-toolbar";
-import { SkeletonList } from "@/components/skeleton-list";
-import { PALETTE } from "@/constants/palette.const";
 import { StatusBar } from "expo-status-bar";
-import type { FC } from "react";
-import { ScrollView, StyleSheet } from "react-native";
-import {
-  useSafeAreaInsets,
-  type EdgeInsets,
-} from "react-native-safe-area-context";
+import { useState, type FC } from "react";
+import { View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-const Index: FC = (): React.ReactNode & React.JSX.Element => {
-  const insets: EdgeInsets = useSafeAreaInsets();
+import {
+  BrowseScreen,
+  FavoritesScreen,
+  LibraryScreen,
+  SettingsScreen,
+} from "@/demo/screens";
+import { useTheme } from "@/demo/theme";
+import { TabBar } from "@/demo/ui";
+
+const TABS = [
+  { key: "library", label: "Library", icon: "albums-outline", iconOn: "albums" },
+  { key: "browse", label: "Browse", icon: "compass-outline", iconOn: "compass" },
+  { key: "favorites", label: "Favorites", icon: "heart-outline", iconOn: "heart" },
+  { key: "settings", label: "Settings", icon: "settings-outline", iconOn: "settings" },
+] as const;
+
+const Index: FC = () => {
+  const t = useTheme();
+  const insets = useSafeAreaInsets();
+  const [tab, setTab] = useState<string>("library");
+  const p = { t, top: insets.top, bottom: insets.bottom };
 
   return (
-    <ScrollView bounces style={styles.screen} scrollEnabled>
-      <StatusBar style="light" />
-      <SkeletonList topInset={insets.top} />
-      <LibraryToolbar topInset={insets.top} palette={PALETTE.dark} />
-    </ScrollView>
+    <View style={{ flex: 1, backgroundColor: t.grouped }}>
+      <StatusBar style={t.dark ? "light" : "dark"} />
+      {tab === "library" ? <LibraryScreen {...p} /> : null}
+      {tab === "browse" ? <BrowseScreen {...p} /> : null}
+      {tab === "favorites" ? <FavoritesScreen {...p} /> : null}
+      {tab === "settings" ? <SettingsScreen {...p} /> : null}
+      <TabBar
+        t={t}
+        bottom={insets.bottom}
+        tabs={TABS as never}
+        active={tab}
+        onChange={setTab}
+      />
+    </View>
   );
 };
-
-const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: PALETTE.dark.background,
-  },
-});
 
 export default Index;
