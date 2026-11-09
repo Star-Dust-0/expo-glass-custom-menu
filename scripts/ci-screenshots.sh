@@ -7,8 +7,23 @@ adb install -r "$APK"
 adb shell settings put global window_animation_scale 0
 adb shell settings put global transition_animation_scale 0
 adb shell settings put global animator_duration_scale 0
+adb shell settings put global hide_error_dialogs 1
+adb shell settings put secure anr_show_background 0
+sleep 45
 
-shot() { sleep 2; adb exec-out screencap -p > "$OUT/$1.png"; }
+wait_tap() {
+  dump
+  python3 - <<'PY' | xargs -r adb shell input tap
+import re
+x = open('/tmp/ui.xml', encoding='utf-8').read()
+if "isn't responding" in x:
+    for m in re.finditer(r'text="Wait"[^>]*bounds="\[(\d+),(\d+)\]\[(\d+),(\d+)\]"', x):
+        a, b, c, d = map(int, m.groups())
+        print((a + c) // 2, (b + d) // 2)
+        break
+PY
+}
+shot() { wait_tap; sleep 4; adb exec-out screencap -p > "$OUT/$1.png"; }
 dump() { adb shell uiautomator dump /sdcard/ui.xml >/dev/null 2>&1; adb pull /sdcard/ui.xml /tmp/ui.xml >/dev/null 2>&1; }
 tap_desc() {
   dump
@@ -22,7 +37,7 @@ for m in re.finditer(r'content-desc="([^"]*)"[^>]*bounds="\[(\d+),(\d+)\]\[(\d+)
         break
 PY
 }
-launch() { adb shell am force-stop $PKG; adb shell monkey -p $PKG -c android.intent.category.LAUNCHER 1 >/dev/null 2>&1; sleep 8; }
+launch() { adb shell am force-stop $PKG; wait_tap; adb shell monkey -p $PKG -c android.intent.category.LAUNCHER 1 >/dev/null 2>&1; sleep 15; wait_tap; }
 
 run_set() {
   mode="$1"
